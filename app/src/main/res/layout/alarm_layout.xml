@@ -2,49 +2,62 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="150dp"
     android:layout_height="150dp"
     app:cardCornerRadius="15dp"
     app:cardElevation="10dp"
     android:layout_margin="20dp"
     android:id="@+id/alarmCardView">
-    
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="8dp">
-        
-        <TextView
-            android:id="@+id/selectedTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="12dp"
-            android:text="12:00"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            />
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="8dp">
 
-        <TextView
-            android:id="@+id/alarmName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Alarm"
-            android:textSize="14sp"/>
+            <TextView
+                android:id="@+id/selectedTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:text="12:00"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                />
 
-        <TextView
-            android:id="@+id/repeatDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Repeat: Never"
-            android:textSize="14sp"/>
+            <TextView
+                android:id="@+id/alarmName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Alarm"
+                android:textSize="14sp"/>
 
-        <Switch
-            android:id="@+id/alarmSwitch"
+            <TextView
+                android:id="@+id/repeatDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Repeat: Never"
+                android:textSize="14sp"/>
+
+            <Switch
+                android:id="@+id/alarmSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/removeAlarmButton"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:checked="false"/>
-    </LinearLayout>
-
+            android:src="@drawable/icons8_trash"
+            android:background="@android:color/transparent"
+            android:layout_gravity="bottom|end"
+            android:contentDescription="Remove alarm button"/>
+    </FrameLayout>
 </androidx.cardview.widget.CardView>

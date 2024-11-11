@@ -1,9 +1,12 @@
 package com.example.theannoyingalarm
 
+import java.io.Serializable
+
 data class Alarm(
-    var name: String = "Alarm",
+    var name: String = "",
     var hour: Int = 0,
     var min: Int = 0,
-    var state: String = "AM",
-    var isActive: Boolean = false
-)
+    var isAm: Boolean = true,
+    var isActive: Boolean = false,
+    var repeat: String = ""
+) : Serializable

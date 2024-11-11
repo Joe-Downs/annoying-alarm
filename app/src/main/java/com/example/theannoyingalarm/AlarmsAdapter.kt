@@ -1,5 +1,6 @@
 package com.example.theannoyingalarm
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +32,7 @@ class AlarmsAdapter(private val alarmsList: List<Alarm>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val alarm = alarmsList[position]
-        holder.selectedTime.text = formatTimeString(alarm.hour, alarm.min, alarm.state)
+        holder.selectedTime.text = formatTimeString(alarm.hour, alarm.min, alarm.isAm)
         holder.alarmName.text = alarm.name
 
         // TODO: implement repeat indicator
@@ -45,7 +46,12 @@ class AlarmsAdapter(private val alarmsList: List<Alarm>) :
         }
 
         holder.itemView.setOnClickListener {
-            TODO("Show detail view")
+            val context = holder.itemView.context
+            val intent = Intent(context, AlarmEdit::class.java). apply {
+                putExtra("Alarm", alarm)
+            }
+
+            (context as MainActivity).startActivity(intent)
         }
 
         holder.activeSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -59,8 +65,8 @@ class AlarmsAdapter(private val alarmsList: List<Alarm>) :
         }
     }
 
-    private fun formatTimeString(hour: Int, minute: Int, amPm: String): String {
-        return String.format("%02d:%02d %s", hour, minute, amPm.uppercase())
+    private fun formatTimeString(hour: Int, minute: Int, amPm: Boolean): String {
+        return String.format("%02d:%02d %s", hour, minute, (if (amPm) "AM" else "PM"))
     }
 
     private fun setAlarm(alarm: Alarm) {
