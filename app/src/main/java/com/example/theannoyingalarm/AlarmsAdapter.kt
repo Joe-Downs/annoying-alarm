@@ -1,6 +1,8 @@
 package com.example.theannoyingalarm
 
 import android.content.Intent
+import android.text.SpannableString
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +13,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.min
 
-class AlarmsAdapter(private val alarmsList: List<Alarm>) :
+class AlarmsAdapter(private val alarmsList: List<Alarm>, private val onItemClick: (Int) -> Unit) :
     RecyclerView.Adapter<AlarmsAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -36,7 +38,9 @@ class AlarmsAdapter(private val alarmsList: List<Alarm>) :
         holder.alarmName.text = alarm.name
 
         // TODO: implement repeat indicator
-        holder.repeat.text = "Repeat: Never"
+        val repeatP1 = SpannableString("Repeat: ")
+        val repeatText = SpannableString(TextUtils.concat(repeatP1, getAttributedRepeatText(alarm.repeat)))
+        holder.repeat.text = repeatText
         if (alarm.isActive) {
             holder.activeSwitch.isChecked = true
 
@@ -46,12 +50,13 @@ class AlarmsAdapter(private val alarmsList: List<Alarm>) :
         }
 
         holder.itemView.setOnClickListener {
-            val context = holder.itemView.context
-            val intent = Intent(context, AlarmEdit::class.java). apply {
-                putExtra("Alarm", alarm)
-            }
-
-            (context as MainActivity).startActivity(intent)
+            onItemClick(position)
+//            val context = holder.itemView.context
+//            val intent = Intent(context, AlarmEdit::class.java). apply {
+//                putExtra(ALARM_KEY, alarm)
+//            }
+//
+//            (context as MainActivity).startActivity(intent)
         }
 
         holder.activeSwitch.setOnCheckedChangeListener { _, isChecked ->

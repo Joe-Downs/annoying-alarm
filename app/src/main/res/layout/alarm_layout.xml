@@ -7,7 +7,7 @@
     android:layout_height="150dp"
     app:cardCornerRadius="15dp"
     app:cardElevation="10dp"
-    android:layout_margin="20dp"
+    android:layout_margin="10dp"
     android:id="@+id/alarmCardView">
     <FrameLayout
         android:layout_width="match_parent"
@@ -34,14 +34,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Alarm"
-                android:textSize="14sp"/>
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/repeatDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Repeat: Never"
-                android:textSize="14sp"/>
+                android:textSize="12sp"/>
 
             <Switch
                 android:id="@+id/alarmSwitch"
