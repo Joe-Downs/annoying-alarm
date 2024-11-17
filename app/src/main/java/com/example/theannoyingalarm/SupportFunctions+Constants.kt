@@ -9,6 +9,7 @@ import android.graphics.Color
 public const val REPEAT_KEY = "Repeats"
 public const val ALARM_KEY = "Alarm"
 public const val POSITION_KEY = "alarm_position"
+public const val ADD_ALARM_KEY = "add_alarm"
 
 public enum class WeekDay(val short: Char, val long: String) {
     MONDAY('M', "Monday"),

@@ -25,9 +25,10 @@
             android:background="@android:color/transparent"/>
 
         <TextView
+            android:id="@+id/alarmEditTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Edit Alarm"
+            android:text="@string/add_alarm"
             android:textStyle="bold"
             android:textSize="20sp"
             android:layout_weight="1"

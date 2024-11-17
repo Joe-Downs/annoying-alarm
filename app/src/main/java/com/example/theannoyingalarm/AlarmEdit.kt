@@ -6,6 +6,7 @@ import android.widget.EditText
 import android.widget.TimePicker
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,10 +18,12 @@ class AlarmEdit: AppCompatActivity() {
     private lateinit var repeatButton: Button
     private lateinit var cancelButton: Button
     private lateinit var saveButton: Button
+    private lateinit var titleLabel: TextView
 
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
     private var position = -1
+    private var isAdd = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +45,7 @@ class AlarmEdit: AppCompatActivity() {
         }
 
         alarm = (intent.getSerializableExtra(ALARM_KEY) as? Alarm)!!
+        isAdd = intent.getBooleanExtra(ADD_ALARM_KEY, false)
         position = intent.getIntExtra(POSITION_KEY, -1)
 
         timePicker = findViewById(R.id.alarmTimePicker)
@@ -49,6 +53,7 @@ class AlarmEdit: AppCompatActivity() {
         repeatButton = findViewById(R.id.alarmRepeatButton)
         cancelButton = findViewById(R.id.alarmEditCancel)
         saveButton = findViewById(R.id.alarmEditDone)
+        titleLabel = findViewById(R.id.alarmEditTitle)
 
         timePicker.hour = alarm.hour + (if (alarm.isAm) 0 else 12)
         timePicker.minute = alarm.min
@@ -73,6 +78,13 @@ class AlarmEdit: AppCompatActivity() {
             alarm.min = timePicker.minute
             alarm.isAm = (timePicker.hour < 12)
         }
+
+        // Set view title depend on is adding alarm or editing alarm
+        if (isAdd) {
+            titleLabel.text = getString(R.string.add_alarm)
+        } else {
+            titleLabel.text = getString(R.string.edit_alarm)
+        }
     }
 
     private fun repeatButtonClicked() {
@@ -82,14 +94,20 @@ class AlarmEdit: AppCompatActivity() {
         activityResultLauncher.launch(intent)
     }
 
+    // handle Cancel button press
     private fun cancelClicked() {
         finish()
     }
 
+    // handle Save button press
     private fun doneClicked() {
         alarm.name = alarmLabel.text.toString()
 
-        val resultIntent = Intent()
+        val resultIntent = Intent().apply {
+            putExtra(ALARM_KEY, alarm)
+            putExtra(POSITION_KEY, position)
+            putExtra(ADD_ALARM_KEY, isAdd)
+        }
         resultIntent.putExtra(ALARM_KEY, alarm)
         resultIntent.putExtra(POSITION_KEY, position)
         setResult(RESULT_OK, resultIntent)

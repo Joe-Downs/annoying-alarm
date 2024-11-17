@@ -4,6 +4,35 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Alarm"
+                android:textStyle="bold"
+                android:textSize="20sp"/>
+
+            <ImageButton
+                android:id="@+id/addAlarmButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/baseline_add_24"
+                android:layout_marginRight="15dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"/>
+        </LinearLayout>
+    </Toolbar>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/alarmsRecyclerView"
         android:layout_width="match_parent"

@@ -3,4 +3,5 @@
     <string name="edit_alarm">Edit Alarm</string>
     <string name="label">Label</string>
     <string name="alarm">Alarm</string>
+    <string name="add_alarm">Add Alarm</string>
 </resources>

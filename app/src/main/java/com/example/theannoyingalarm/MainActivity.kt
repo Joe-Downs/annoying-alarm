@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TimePicker
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,48 +29,69 @@ import java.util.Calendar
 class MainActivity : ComponentActivity() {
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var alarmRecyclerView: RecyclerView
+    private lateinit var addAlarmButton: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContentView(R.layout.main_activity)
+
         alarmRecyclerView = findViewById(R.id.alarmsRecyclerView)
+        addAlarmButton = findViewById(R.id.addAlarmButton)
 
         val spanCount = spanCount(150)
         alarmRecyclerView.layoutManager = GridLayoutManager(this, spanCount)
-
 
         var alarmList = mutableListOf(
             Alarm("Alarm 1", 3, 10, isAm = true),
             Alarm("Alarm 2", 4, 15, isAm = false)
         )
 
+        // Set up recycler view
         val adapter = AlarmsAdapter(alarmList, { position ->
             val intent = Intent(this, AlarmEdit::class.java).apply {
                 putExtra(ALARM_KEY, alarmList[position])
                 putExtra(POSITION_KEY, position)
+                putExtra(ADD_ALARM_KEY, false)
             }
 
             activityResultLauncher.launch(intent)
         })
+
+        alarmRecyclerView.adapter = adapter
+
+        // Set up add alarm button
+        addAlarmButton.setOnClickListener {
+            val addAlarm = Alarm("Alarm", 6, 0, false)
+            val intent = Intent(this, AlarmEdit::class.java). apply {
+                putExtra(ALARM_KEY, addAlarm)
+                putExtra(ADD_ALARM_KEY, true)
+            }
+
+            activityResultLauncher.launch(intent)
+        }
 
         // Initialize the ActivityResultLauncher
         activityResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
+                val isAdd = result.data?.getBooleanExtra(ADD_ALARM_KEY, false) ?: false
                 val resultAlarm = (result.data?.getSerializableExtra(ALARM_KEY) as? Alarm)
                 if (resultAlarm != null) {
-                    val position = result.data?.getIntExtra(POSITION_KEY, -1) ?: -1
-                    if (position != -1) {
-                        alarmList[position] = resultAlarm
-                        adapter.notifyItemChanged(position)
+                    if (isAdd) {
+                        alarmList.add(resultAlarm)
+                        adapter.notifyItemInserted(alarmList.size - 1)
+                    } else {
+                        val position = result.data?.getIntExtra(POSITION_KEY, -1) ?: -1
+                        if (position != -1) {
+                            alarmList[position] = resultAlarm
+                            adapter.notifyItemChanged(position)
+                        }
                     }
                 }
             }
         }
-
-        alarmRecyclerView.adapter = adapter
     }
 
     private fun spanCount(itemWidth: Int): Int {
