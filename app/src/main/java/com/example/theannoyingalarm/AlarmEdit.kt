@@ -46,7 +46,6 @@ class AlarmEdit: AppCompatActivity() {
 
         alarm = (intent.getSerializableExtra(ALARM_KEY) as? Alarm)!!
         isAdd = intent.getBooleanExtra(ADD_ALARM_KEY, false)
-        position = intent.getIntExtra(POSITION_KEY, -1)
 
         timePicker = findViewById(R.id.alarmTimePicker)
         alarmLabel = findViewById(R.id.alarmName)
@@ -105,11 +104,8 @@ class AlarmEdit: AppCompatActivity() {
 
         val resultIntent = Intent().apply {
             putExtra(ALARM_KEY, alarm)
-            putExtra(POSITION_KEY, position)
             putExtra(ADD_ALARM_KEY, isAdd)
         }
-        resultIntent.putExtra(ALARM_KEY, alarm)
-        resultIntent.putExtra(POSITION_KEY, position)
         setResult(RESULT_OK, resultIntent)
         finish()
     }

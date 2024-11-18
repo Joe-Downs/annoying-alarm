@@ -6,6 +6,7 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.Switch
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +14,10 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.min
 
-class AlarmsAdapter(private val alarmsList: List<Alarm>, private val onItemClick: (Int) -> Unit) :
+class AlarmsAdapter(
+    private var alarmsList: List<Alarm>,
+    private val onItemClick: (Alarm) -> Unit,
+    private val onDeleteClick: (Alarm) -> Unit) :
     RecyclerView.Adapter<AlarmsAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -21,6 +25,7 @@ class AlarmsAdapter(private val alarmsList: List<Alarm>, private val onItemClick
         val repeat: TextView = view.findViewById(R.id.repeatDate)
         val alarmName: TextView = view.findViewById(R.id.alarmName)
         val activeSwitch: Switch = view.findViewById(R.id.alarmSwitch)
+        val removeButton: ImageButton = view.findViewById(R.id.removeAlarmButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,10 +42,11 @@ class AlarmsAdapter(private val alarmsList: List<Alarm>, private val onItemClick
         holder.selectedTime.text = formatTimeString(alarm.hour, alarm.min, alarm.isAm)
         holder.alarmName.text = alarm.name
 
-        // TODO: implement repeat indicator
+        // Set repeat indicator
         val repeatP1 = SpannableString("Repeat: ")
         val repeatText = SpannableString(TextUtils.concat(repeatP1, getAttributedRepeatText(alarm.repeat)))
         holder.repeat.text = repeatText
+
         if (alarm.isActive) {
             holder.activeSwitch.isChecked = true
 
@@ -49,14 +55,14 @@ class AlarmsAdapter(private val alarmsList: List<Alarm>, private val onItemClick
             holder.activeSwitch.isChecked = false
         }
 
+        // handle edit alarm click
         holder.itemView.setOnClickListener {
-            onItemClick(position)
-//            val context = holder.itemView.context
-//            val intent = Intent(context, AlarmEdit::class.java). apply {
-//                putExtra(ALARM_KEY, alarm)
-//            }
-//
-//            (context as MainActivity).startActivity(intent)
+            onItemClick(alarm)
+        }
+
+        // handle remove alarm click
+        holder.removeButton.setOnClickListener {
+            onDeleteClick(alarm)
         }
 
         holder.activeSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -68,8 +74,11 @@ class AlarmsAdapter(private val alarmsList: List<Alarm>, private val onItemClick
                 cancelAlarm(alarm)
             }
         }
+
+
     }
 
+    // Private Functions
     private fun formatTimeString(hour: Int, minute: Int, amPm: Boolean): String {
         return String.format("%02d:%02d %s", hour, minute, (if (amPm) "AM" else "PM"))
     }
@@ -80,5 +89,11 @@ class AlarmsAdapter(private val alarmsList: List<Alarm>, private val onItemClick
 
     private fun cancelAlarm(alarm: Alarm) {
 
+    }
+
+    // Public functions
+    fun setData(alarms: List<Alarm>) {
+        alarmsList = alarms
+        notifyDataSetChanged()
     }
 }
