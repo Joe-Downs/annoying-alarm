@@ -4,7 +4,10 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TimePicker
@@ -21,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,6 +43,7 @@ class MainActivity : ComponentActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContentView(R.layout.main_activity)
 
+
         // Initialize all views
         alarmRecyclerView = findViewById(R.id.alarmsRecyclerView)
         addAlarmButton = findViewById(R.id.addAlarmButton)
@@ -49,6 +54,7 @@ class MainActivity : ComponentActivity() {
 
         // Set up recycler view adapter
         val adapter = AlarmsAdapter(
+            this,
             emptyList(),
             onItemClick = { alarm -> editAlarmShow(alarm) },
             onDeleteClick = { alarm -> deleteAlarm(alarm) })
@@ -86,11 +92,10 @@ class MainActivity : ComponentActivity() {
                         alarmViewModel.addAlarm(resultAlarm)
                     } else {
                         alarmViewModel.updateAlarm(resultAlarm)
-//                        val position = result.data?.getIntExtra(POSITION_KEY, -1) ?: -1
-//                        if (position != -1) {
-//                            alarmList[position] = resultAlarm
-//                            adapter.notifyItemChanged(position)
-//                        }
+                        resultAlarm.cancelAlarm(this)
+                        if (resultAlarm.isActive) {
+                            resultAlarm.setAlarm(this)
+                        }
                     }
                 }
             }
@@ -117,6 +122,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun deleteAlarm(alarm: Alarm) {
+        alarm.cancelAlarm(this)
         alarmViewModel.deleteAlarm(alarm)
     }
 

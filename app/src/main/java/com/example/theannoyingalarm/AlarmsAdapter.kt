@@ -1,5 +1,6 @@
 package com.example.theannoyingalarm
 
+import android.content.Context
 import android.content.Intent
 import android.text.SpannableString
 import android.text.TextUtils
@@ -15,6 +16,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.min
 
 class AlarmsAdapter(
+    private val context: Context,
     private var alarmsList: List<Alarm>,
     private val onItemClick: (Alarm) -> Unit,
     private val onDeleteClick: (Alarm) -> Unit) :
@@ -84,11 +86,11 @@ class AlarmsAdapter(
     }
 
     private fun setAlarm(alarm: Alarm) {
-
+        alarm.setAlarm(context)
     }
 
     private fun cancelAlarm(alarm: Alarm) {
-
+        alarm.cancelAlarm(context)
     }
 
     // Public functions

@@ -11,16 +11,6 @@ public const val ALARM_KEY = "Alarm"
 public const val POSITION_KEY = "alarm_position"
 public const val ADD_ALARM_KEY = "add_alarm"
 
-public enum class WeekDay(val short: Char, val long: String) {
-    MONDAY('M', "Monday"),
-    TUESDAY('T', "Tuesday"),
-    WEDNESDAY('W', "Wednesday"),
-    THURSDAY('U', "Thursday"),
-    FRIDAY('F', "Friday"),
-    SATURDAY('S', "Saturday"),
-    SUNDAY('N', "Sunday")
-}
-
 public fun getAttributedRepeatText(repeat: String): SpannableString {
     if (repeat.isEmpty()) {
         return SpannableString("Never")
