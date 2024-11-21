@@ -1,7 +1,6 @@
 package com.example.theannoyingalarm
 
 import android.content.Context
-import android.content.Intent
 import android.text.SpannableString
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -11,9 +10,6 @@ import android.widget.ImageButton
 import android.widget.Switch
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import kotlin.math.min
 
 class AlarmsAdapter(
     private val context: Context,

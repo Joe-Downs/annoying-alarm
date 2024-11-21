@@ -14,32 +14,31 @@ class AlarmReceiver : BroadcastReceiver() {
 
         // Set repeat if allow repeat
         val isRepeat = intent.getBooleanExtra("Alarm_repeat", false)
-            if (isRepeat) {
-                val alarmID = intent.getIntExtra("Alarm_ID", -1)
-                if (alarmID == -1) {
-                    return
-                }
-                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                val nextAlarmTime = Calendar.getInstance().apply {
-                    timeInMillis = System.currentTimeMillis()
-                    add(Calendar.WEEK_OF_YEAR, 1) // Add 1 week to the current time
-                    set(Calendar.SECOND, 0)
-                }
-
-                val alarmIntent = Intent(context, AlarmReceiver::class.java)
-                val pendingIntent = PendingIntent.getBroadcast(
-                    context,
-                    alarmID,
-                    alarmIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    nextAlarmTime.timeInMillis,
-                    pendingIntent
-                )
+        if (isRepeat) {
+            val alarmID = intent.getIntExtra("Alarm_ID", -1)
+            if (alarmID == -1) {
+                return
+            }
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val nextAlarmTime = Calendar.getInstance().apply {
+                timeInMillis = System.currentTimeMillis()
+                add(Calendar.WEEK_OF_YEAR, 1) // Add 1 week to the current time
+                set(Calendar.SECOND, 0)
             }
 
+            val alarmIntent = Intent(context, AlarmReceiver::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                alarmID,
+                alarmIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                nextAlarmTime.timeInMillis,
+                pendingIntent
+            )
+        }
     }
 }

@@ -1,35 +1,16 @@
 package com.example.theannoyingalarm
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import android.widget.Button
 import android.widget.ImageButton
-import android.widget.TimePicker
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.theannoyingalarm.ui.theme.TheAnnoyingAlarmTheme
-import java.util.Calendar
 
 class MainActivity : ComponentActivity() {
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
@@ -62,7 +43,7 @@ class MainActivity : ComponentActivity() {
 
         // Initialize View Model using the Factory
         val factory = AlarmFactory(application)
-        alarmViewModel = ViewModelProvider(this, factory).get(AlarmViewModel::class.java)
+        alarmViewModel = ViewModelProvider(this, factory)[AlarmViewModel::class.java]
 
         // Observe Live Data
         alarmViewModel.alarms.observe(this) { alarms ->

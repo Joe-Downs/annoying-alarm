@@ -87,6 +87,11 @@ data class Alarm(
         calendar.set(Calendar.MINUTE, this.min)
         calendar.set(Calendar.SECOND, 0)
 
+        // Check if the alarm time is in the past for today
+        if (calendar.timeInMillis <= System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1) // Move to the next day
+        }
+
         // Adjust the calendar to the selected day of the week
         while (calendar.get(Calendar.DAY_OF_WEEK) != dayOfWeek.int) {
             calendar.add(Calendar.DAY_OF_WEEK, 1)
@@ -119,6 +124,11 @@ data class Alarm(
         calendar.set(Calendar.HOUR_OF_DAY, if(isAm) this.hour else this.hour + 12)
         calendar.set(Calendar.MINUTE, this.min)
         calendar.set(Calendar.SECOND, 0)
+
+        // Check if the alarm time is in the past for today
+        if (calendar.timeInMillis <= System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1) // Move to the next day
+        }
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java).apply {
