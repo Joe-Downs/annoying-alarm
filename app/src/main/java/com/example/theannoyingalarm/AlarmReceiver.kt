@@ -26,6 +26,8 @@ class AlarmReceiver : BroadcastReceiver() {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 
+        context.startActivity(fullScreenIntent)
+
         val fullScreenPendingIntent = PendingIntent.getActivity(
             context,
             0,
