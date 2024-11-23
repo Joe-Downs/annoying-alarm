@@ -8,8 +8,8 @@ import android.graphics.Color
 
 public const val REPEAT_KEY = "Repeats"
 public const val ALARM_KEY = "Alarm"
-public const val POSITION_KEY = "alarm_position"
 public const val ADD_ALARM_KEY = "add_alarm"
+public const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1
 
 public fun getAttributedRepeatText(repeat: String): SpannableString {
     if (repeat.isEmpty()) {

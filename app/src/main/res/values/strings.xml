@@ -4,4 +4,6 @@
     <string name="label">Label</string>
     <string name="alarm">Alarm</string>
     <string name="add_alarm">Add Alarm</string>
+    <string name="pm">PM</string>
+    <string name="am">AM</string>
 </resources>

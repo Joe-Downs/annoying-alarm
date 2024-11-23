@@ -60,7 +60,6 @@ data class Alarm(
         )
 
         alarmManager.cancel(pendingIntent)
-        Toast.makeText(context, "Alarm Cancelled", Toast.LENGTH_SHORT).show()
     }
 
     private fun setExactAlarm(context: Context) {
@@ -101,6 +100,7 @@ data class Alarm(
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("Alarm_repeat", true)
             putExtra("Alarm_ID", id)
+            putExtra("Alarm_object", this@Alarm)
         }
         val pendingIntent = PendingIntent.getBroadcast(
             context,
@@ -113,8 +113,6 @@ data class Alarm(
             calendar.timeInMillis,
             pendingIntent
         )
-
-        Toast.makeText(context, "Weekly alarm set for ${dayOfWeek.long}!", Toast.LENGTH_SHORT).show()
     }
 
     private fun setSingleAlarm(context: Context) {
@@ -133,6 +131,8 @@ data class Alarm(
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("Alarm_repeat", false)
+            putExtra("Alarm_ID", this@Alarm.alarmID)
+            putExtra("Alarm_object", this@Alarm)
         }
         val pendingIntent = PendingIntent.getBroadcast(
             context,

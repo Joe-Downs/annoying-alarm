@@ -1,13 +1,20 @@
 package com.example.theannoyingalarm
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -84,6 +91,23 @@ class MainActivity : ComponentActivity() {
 
         // Add default item if first launch
         checkAndAddDefaultItem()
+
+        // Ask permission to use notification alarm
+        notifyPermission()
+    }
+
+    // Handle Permission Request Result
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+                return
+            } else {
+                // Permission denied
+                Log.d("Notification Permission", "Permission were denied to allow notification resources")
+            }
+        }
     }
 
     private fun spanCount(itemWidth: Int): Int {
@@ -118,6 +142,22 @@ class MainActivity : ComponentActivity() {
 
             // Update so that the first launch was handle
             sharedPreferences.edit().putBoolean("isFirstLaunch", false).apply()
+        }
+    }
+
+    private fun notifyPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val permissionState = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+            // If the permission is not granted, request it.
+            if (permissionState == PackageManager.PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), NOTIFICATION_PERMISSION_REQUEST_CODE)
+            } else {
+                // Permission already granted, proceed with other initializations or permissions
+                return
+            }
+        } else {
+            // For versions lower than Android 13, proceed without checking POST_NOTIFICATIONS permission
+            return
         }
     }
 }

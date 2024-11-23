@@ -65,6 +65,8 @@ class AlarmsAdapter(
 
         holder.activeSwitch.setOnCheckedChangeListener { _, isChecked ->
             alarm.isActive = isChecked
+            val alarmViewModel = ViewModelHolder.alarmViewModel
+            alarmViewModel.updateAlarm(alarm)
 
             if (isChecked) {
                 setAlarm(alarm)
