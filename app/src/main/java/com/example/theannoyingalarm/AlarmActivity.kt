@@ -1,7 +1,7 @@
 package com.example.theannoyingalarm
 
+import android.content.Intent
 import android.icu.util.Calendar
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -12,7 +12,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class AlarmActivity: AppCompatActivity() {
-    private var mediaPlayer: MediaPlayer? = null
+    private lateinit var alarmReceiver: AlarmReceiver
     private val scheduler = Executors.newSingleThreadScheduledExecutor()
 
     private lateinit var alarmName: TextView
@@ -25,20 +25,21 @@ class AlarmActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.alarm_activity)
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.bright_morning_alarm)
-        mediaPlayer?.isLooping = true
-        mediaPlayer?.start()
-
         alarmName = findViewById(R.id.alarm_name)
         alarmTime = findViewById(R.id.alarm_time)
         alarmAm = findViewById(R.id.alarm_am_pm)
         snoozeButton = findViewById(R.id.snooze_button)
         dismissButton = findViewById(R.id.dismiss_button)
 
+        alarmReceiver = AlarmReceiver()
         startUpdateTime()
         dismissButton.setOnClickListener {
-            mediaPlayer?.stop()
-            mediaPlayer?.release()
+            // Stop the foreground service
+            val serviceIntent = Intent(this, AlarmForegroundService::class.java)
+            stopService(serviceIntent)
+
+            // Close the activity
+            finish()
             finish()
         }
 
@@ -68,7 +69,8 @@ class AlarmActivity: AppCompatActivity() {
         // Shut down the scheduler when the activity is destroyed to prevent memory leaks
         scheduler.shutdown()
 
-        // Free resource assigned for media player to prevent memory leak
-        mediaPlayer?.release()
+        // Stop the foreground service
+        val serviceIntent = Intent(this, AlarmForegroundService::class.java)
+        stopService(serviceIntent)
     }
 }

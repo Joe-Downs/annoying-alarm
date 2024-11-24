@@ -4,8 +4,10 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.widget.ImageButton
 import android.widget.Toast
@@ -31,6 +33,7 @@ class MainActivity : ComponentActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContentView(R.layout.main_activity)
 
+        requestBatteryOptimizationExclusion()
 
         // Initialize all views
         alarmRecyclerView = findViewById(R.id.alarmsRecyclerView)
@@ -158,6 +161,15 @@ class MainActivity : ComponentActivity() {
         } else {
             // For versions lower than Android 13, proceed without checking POST_NOTIFICATIONS permission
             return
+        }
+    }
+
+    private fun requestBatteryOptimizationExclusion() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                data = Uri.parse("package:${packageName}")
+            }
+            startActivity(intent)
         }
     }
 }
