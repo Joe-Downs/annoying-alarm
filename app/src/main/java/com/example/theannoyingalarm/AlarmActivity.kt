@@ -1,5 +1,8 @@
 package com.example.theannoyingalarm
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Bundle
@@ -13,6 +16,7 @@ import java.util.concurrent.TimeUnit
 
 class AlarmActivity: AppCompatActivity() {
     private lateinit var alarmReceiver: AlarmReceiver
+    private lateinit var alarm: Alarm
     private val scheduler = Executors.newSingleThreadScheduledExecutor()
 
     private lateinit var alarmName: TextView
@@ -31,21 +35,68 @@ class AlarmActivity: AppCompatActivity() {
         snoozeButton = findViewById(R.id.snooze_button)
         dismissButton = findViewById(R.id.dismiss_button)
 
-        alarmReceiver = AlarmReceiver()
-        startUpdateTime()
-        dismissButton.setOnClickListener {
-            // Stop the foreground service
-            val serviceIntent = Intent(this, AlarmForegroundService::class.java)
-            stopService(serviceIntent)
+        // Get the alarm and make sure it is not null
+        val tempAlarm = (intent.getSerializableExtra("Alarm_object") as? Alarm)
+        if (tempAlarm == null) {
+            dismissAlarm()
+        } else {
+            alarm = tempAlarm
+        }
 
-            // Close the activity
-            finish()
-            finish()
+        alarmReceiver = AlarmReceiver()
+
+        // Display alarm name
+        alarmName.text = alarm.name
+
+        // Set up a scheduler to display current time
+        startUpdateTime()
+
+        dismissButton.setOnClickListener {
+            dismissAlarm()
         }
 
         snoozeButton.setOnClickListener {
-
+            snoozeAlarm()
+            dismissAlarm()
         }
+    }
+
+    private fun snoozeAlarm() {
+        // Set another alarm that will ring in 10 minutes
+        val snoozeAlarm = Calendar.getInstance() // Get the current time
+        snoozeAlarm.add(Calendar.MINUTE, 10) // Add 10 minutes
+
+        // create unique id for snooze alarm, last digit is 0 represent the snooze alarm for this alarm
+        val alarmID = alarm.alarmID * 10
+
+        // Set snooze alarm for the next 10 minutes
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmIntent = Intent(this, AlarmReceiver::class.java).apply {
+            putExtra("Alarm_repeat", false)
+            putExtra("Alarm_ID", alarmID)
+            putExtra("Alarm_object", alarm)
+        }
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            alarmID,
+            alarmIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            snoozeAlarm.timeInMillis,
+            pendingIntent
+        )
+    }
+
+    private fun dismissAlarm() {
+        // Stop the foreground service
+        val serviceIntent = Intent(this, AlarmForegroundService::class.java)
+        stopService(serviceIntent)
+
+        // Close the activity
+        finish()
     }
 
     private fun startUpdateTime() {

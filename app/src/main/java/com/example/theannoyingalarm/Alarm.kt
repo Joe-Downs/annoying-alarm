@@ -77,7 +77,7 @@ data class Alarm(
 
     // Function to set weekly alarm for a day of the week
     private fun setWeeklyAlarm(context: Context, dayOfWeek: WeekDay) {
-        // Create unique id for this alarm
+        // Create unique id for this alarm, the last digit represent the day of the week
         val id = this.alarmID * 10 + dayOfWeek.int
         val calendar = Calendar.getInstance()
 

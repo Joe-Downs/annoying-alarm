@@ -12,7 +12,9 @@ import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import androidx.core.app.NotificationCompat
 
 class AlarmForegroundService : Service() {
@@ -24,21 +26,31 @@ class AlarmForegroundService : Service() {
     private val channelId = "alarm_channel"
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val tempAlarm = (intent?.getSerializableExtra("Alarm_object") as? Alarm)!!
 
         createNotificationChannel()
 
         // Create an intent to open the AlarmActivity
-        val fullScreenIntent = Intent(this, AlarmActivity::class.java)
+        val fullScreenIntent = Intent(this, AlarmActivity::class.java).apply {
+            putExtra("Alarm_object", tempAlarm)
+        }
+
         val pendingIntent = PendingIntent.getActivity(
-            this, 0, fullScreenIntent, PendingIntent.FLAG_IMMUTABLE
+            this,
+            0,
+            fullScreenIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("Alarm Active")
             .setContentText("Tap to stop the alarm.")
             .setSmallIcon(R.drawable.baseline_access_alarms_24)
-            .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setFullScreenIntent(pendingIntent, true)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
             .build()
 
         startForeground(1, notification)
@@ -46,12 +58,13 @@ class AlarmForegroundService : Service() {
         // Initialize AudioManager
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-        // Request audio focus
-        val result = requestAudioFocus()
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            // If audio focus is granted, proceed to play alarm sound
-            startAlarm()
-        }
+        // Add 3 seconds of delay to ensure the sound play after the notification
+        Handler(Looper.getMainLooper()).postDelayed({
+            val result = requestAudioFocus()
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                startAlarm()
+            }
+        }, 3000) // Delay of 3 seconds
 
         return START_STICKY
     }
