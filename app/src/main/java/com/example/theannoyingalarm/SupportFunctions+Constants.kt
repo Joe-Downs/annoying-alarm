@@ -10,6 +10,8 @@ public const val REPEAT_KEY = "Repeats"
 public const val ALARM_KEY = "Alarm"
 public const val ADD_ALARM_KEY = "add_alarm"
 public const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1
+public const val IS_SNOOZE_KEY = "is_snooze"
+public const val IS_PUZZLE_COMPLETE_KEY = "is_puzzle_complete"
 
 public fun getAttributedRepeatText(repeat: String): SpannableString {
     if (repeat.isEmpty()) {

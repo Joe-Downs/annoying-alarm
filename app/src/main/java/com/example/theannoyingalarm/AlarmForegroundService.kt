@@ -139,7 +139,7 @@ class AlarmForegroundService : Service() {
     private fun abandonAudioFocus() {
         // Abandon audio focus when done with alarm
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            audioManager.abandonAudioFocusRequest(audioFocusRequest)
+            audioFocusRequest?.let { audioManager.abandonAudioFocusRequest(it) }
         } else {
             audioManager.abandonAudioFocus(audioFocusChangeListener)
         }

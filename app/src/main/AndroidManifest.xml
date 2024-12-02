@@ -36,6 +36,15 @@
             android:showWhenLocked="true"
             android:turnScreenOn="true"
             android:exported="true" />
+        <activity android:name=".TestPuzzle"
+            android:exported="true"
+            android:theme="@style/Theme.TheAnnoyingAlarm"/>
+        <activity android:name=".SlidingPuzzle"
+            android:exported="true"
+            android:theme="@style/Theme.SlidingPuzzle" />
+        <activity android:name=".AdditionPuzzle"
+            android:exported="true"
+            android:theme="@style/Theme.TheAnnoyingAlarm" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

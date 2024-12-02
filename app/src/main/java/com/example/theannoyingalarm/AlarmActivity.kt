@@ -8,6 +8,8 @@ import android.icu.util.Calendar
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -15,6 +17,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class AlarmActivity: AppCompatActivity() {
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var alarmReceiver: AlarmReceiver
     private lateinit var alarm: Alarm
     private val scheduler = Executors.newSingleThreadScheduledExecutor()
@@ -52,12 +55,26 @@ class AlarmActivity: AppCompatActivity() {
         startUpdateTime()
 
         dismissButton.setOnClickListener {
-            dismissAlarm()
+            showPuzzle(false)
         }
 
         snoozeButton.setOnClickListener {
-            snoozeAlarm()
-            dismissAlarm()
+            showPuzzle(true)
+        }
+
+        activityResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val isComplete = result.data?.getBooleanExtra(IS_PUZZLE_COMPLETE_KEY, false) ?: false
+                if (isComplete) {
+                    val isSnooze = result.data?.getBooleanExtra(IS_SNOOZE_KEY, false) ?: false
+                    if (isSnooze) {
+                        snoozeAlarm()
+                    }
+                    dismissAlarm()
+                }
+            }
         }
     }
 
@@ -113,6 +130,28 @@ class AlarmActivity: AppCompatActivity() {
                 alarmAm.text = if (isAm) getString(R.string.am) else getString(R.string.pm)
             }
         }, 0, 1, TimeUnit.SECONDS)
+    }
+
+    private fun showPuzzle(isSnooze: Boolean) {
+        val randomPuzzle = Puzzle.values().random()
+        when (randomPuzzle) {
+            Puzzle.SlidingPuzzle -> {
+                val intent = Intent(this, SlidingPuzzle::class.java).apply {
+                    putExtra(IS_SNOOZE_KEY, isSnooze)
+                }
+
+                activityResultLauncher.launch(intent)
+            }
+
+            Puzzle.AdditionPuzzle -> {
+                val intent = Intent(this, TestPuzzle::class.java).apply {
+                    putExtra(IS_SNOOZE_KEY, isSnooze)
+                }
+
+                activityResultLauncher.launch(intent)
+            }
+        }
+
     }
 
     override fun onDestroy() {
