@@ -42,6 +42,9 @@
         <activity android:name=".SlidingPuzzle"
             android:exported="true"
             android:theme="@style/Theme.SlidingPuzzle" />
+        <activity android:name=".RGBGuruPuzzle"
+            android:exported="true"
+            android:theme="@style/Theme.TheAnnoyingAlarm" />
         <activity android:name=".AdditionPuzzle"
             android:exported="true"
             android:theme="@style/Theme.TheAnnoyingAlarm" />
