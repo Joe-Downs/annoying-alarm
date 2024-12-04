@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:textAlignment="center">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="59dp"
+        android:text="RGB Guru"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:id="@+id/rgbGuruTargetSquare"
+        android:layout_width="match_parent"
+        android:layout_height="122dp"
+        android:backgroundTint="#DE2121"
+        android:src="@drawable/rgb_guru_square"
+        android:tint="#FF0000" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="47dp" />
+
+    <SeekBar
+        android:id="@+id/rgbGuruRedSlider"
+        style="@style/Widget.AppCompat.SeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:max="255"
+        android:paddingStart="32dip"
+        android:paddingEnd="32dip"
+        android:progress="128" />
+
+    <SeekBar
+        android:id="@+id/rgbGuruGreenSlider"
+        android:layout_width="match_parent"
+        android:layout_height="105dp"
+        android:max="255"
+        android:paddingStart="32dip"
+        android:paddingEnd="32dip"
+        android:progress="128"
+        android:scrollbarStyle="insideInset" />
+
+    <SeekBar
+        android:id="@+id/rgbGuruBlueSlider"
+        android:layout_width="match_parent"
+        android:layout_height="93dp"
+        android:max="255"
+        android:paddingStart="32dip"
+        android:paddingEnd="32dip"
+        android:progress="128"
+        android:scrollbarStyle="insideInset" />
+
+    <ImageView
+        android:id="@+id/rgbGuruUserSquare"
+        android:layout_width="match_parent"
+        android:layout_height="122dp"
+        android:foregroundTint="#FF0000"
+        android:src="@drawable/rgb_guru_square" />
+
+</LinearLayout>
