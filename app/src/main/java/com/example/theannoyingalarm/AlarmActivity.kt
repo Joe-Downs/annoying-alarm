@@ -150,6 +150,14 @@ class AlarmActivity: AppCompatActivity() {
 
                 activityResultLauncher.launch(intent)
             }
+
+            Puzzle.RGBGuruPuzzle -> {
+                val intent = Intent(this, RGBGuruPuzzle::class.java).apply {
+                    putExtra(IS_SNOOZE_KEY, isSnooze)
+                }
+
+                activityResultLauncher.launch(intent)
+            }
         }
 
     }
