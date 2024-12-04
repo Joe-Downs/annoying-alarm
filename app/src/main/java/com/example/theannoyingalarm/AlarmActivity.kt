@@ -144,7 +144,7 @@ class AlarmActivity: AppCompatActivity() {
             }
 
             Puzzle.AdditionPuzzle -> {
-                val intent = Intent(this, TestPuzzle::class.java).apply {
+                val intent = Intent(this, AdditionPuzzle::class.java).apply {
                     putExtra(IS_SNOOZE_KEY, isSnooze)
                 }
 

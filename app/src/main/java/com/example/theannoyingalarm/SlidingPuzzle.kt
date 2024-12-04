@@ -89,7 +89,7 @@ class SlidingPuzzle : ComponentActivity() {
                                     if (isSolved) {
                                         coroutineScope.launch {
                                             delay(2000)
-                                            context?.finish() // Use LocalContext to call finish
+                                            puzzleComplete()
                                         }
                                     }
                                 }

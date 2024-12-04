@@ -6,6 +6,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class AdditionPuzzle : AppCompatActivity() {
@@ -45,6 +50,10 @@ class AdditionPuzzle : AppCompatActivity() {
                 tvAlarmStatus.text = "✅ Alarm turned off!"
                 tvAlarmStatus.setTextColor(getColor(R.color.teal_700))
                 btnSubmit.isEnabled = false // Disable button
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(2000)
+                    puzzleComplete()
+                }
             } else {
                 tvFeedback.text = "❌ Wrong answer. Try again!"
             }
