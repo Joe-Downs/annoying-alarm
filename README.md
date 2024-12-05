@@ -38,11 +38,11 @@ cannot be snoozed or turned off until you complete a minigame.
 - RGB Guru Puzzle
 
 ### Continuation development
-Implement more puzzles/games. <br/>
-Implement the ability to select alarm ringtone. <br/>
-Apply dynamic difficulty, increase the difficulty of the puzzle when user choose to snooze. <br/>
-Ability to select prefered puzzle/games.  <br/>
-Improve UI with colorful pitures and background.
+* Implement more puzzles/games. <br/>
+* Implement the ability to select alarm ringtone. <br/>
+* Apply dynamic difficulty, increase the difficulty of the puzzle when user choose to snooze. <br/>
+* Ability to select prefered puzzle/games.  <br/>
+* Improve UI with colorful pitures and background.
 
 ## Authors
 
@@ -52,3 +52,6 @@ Made by CSE 550-(75/76) Group 4:
 * Karan Dhar
 * Joseph Downs
 * Danson Wachira
+
+### Appendix
+* Presentation Video: https://youtu.be/uEw_TFJWeFo
