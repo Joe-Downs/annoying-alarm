@@ -1,15 +1,12 @@
 package com.example.theannoyingalarm
 
 import android.graphics.Color
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
-import kotlinx.coroutines.delay
-import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class GenericSeekBarChangeListener(puzzle : RGBGuruPuzzle) : OnSeekBarChangeListener
@@ -30,10 +27,7 @@ class GenericSeekBarChangeListener(puzzle : RGBGuruPuzzle) : OnSeekBarChangeList
             if (Color.red(color) <= Color.red(target) + tolerance && Color.red(color) >= Color.red(target) - tolerance) {
                 if (Color.green(color) <= Color.green(target) + tolerance && Color.green(color) >= Color.green(target) - tolerance) {
                     if (Color.blue(color) <= Color.blue(target) + tolerance && Color.blue(color) >= Color.blue(target) - tolerance) {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            delay(2000)
-                            puzzle.puzzleComplete()
-                        }
+                        puzzle.puzzleComplete()
                     }
                 }
 

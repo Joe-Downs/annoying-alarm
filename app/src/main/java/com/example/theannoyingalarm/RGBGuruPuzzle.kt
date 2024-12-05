@@ -16,6 +16,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ComponentActivity
 import androidx.core.content.ContextCompat
 import com.example.theannoyingalarm.ui.theme.TheAnnoyingAlarmTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class RGBGuruPuzzle : AppCompatActivity() {
     private var isSnooze = false
@@ -39,7 +43,6 @@ class RGBGuruPuzzle : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         setContentView(R.layout.rgb_guru)
 
         isSnooze = intent.getBooleanExtra(IS_SNOOZE_KEY, false)
@@ -50,6 +53,7 @@ class RGBGuruPuzzle : AppCompatActivity() {
         redSlider = findViewById(R.id.rgbGuruRedSlider)
         greenSlider = findViewById(R.id.rgbGuruGreenSlider)
         blueSlider = findViewById(R.id.rgbGuruBlueSlider)
+        message = findViewById(R.id.message)
 
         var red = redSlider.progress
         var green = greenSlider.progress
@@ -65,13 +69,20 @@ class RGBGuruPuzzle : AppCompatActivity() {
     }
 
     fun puzzleComplete() {
-        isComplete = true
-        val resultIntent = Intent().apply {
-            putExtra(IS_SNOOZE_KEY, isSnooze)
-            putExtra(IS_PUZZLE_COMPLETE_KEY, isComplete)
-        }
+        redSlider.isEnabled = false
+        greenSlider.isEnabled = false
+        blueSlider.isEnabled = false
+        message.text = "Correct!"
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(2000)
+            isComplete = true
+            val resultIntent = Intent().apply {
+                putExtra(IS_SNOOZE_KEY, isSnooze)
+                putExtra(IS_PUZZLE_COMPLETE_KEY, isComplete)
+            }
 
-        setResult(RESULT_OK, resultIntent)
-        finish()
+            setResult(RESULT_OK, resultIntent)
+            finish()
+        }
     }
 }

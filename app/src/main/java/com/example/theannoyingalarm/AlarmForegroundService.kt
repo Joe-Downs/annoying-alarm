@@ -96,6 +96,7 @@ class AlarmForegroundService : Service() {
                 .setOnAudioFocusChangeListener(audioFocusChangeListener)  // Set listener for audio focus changes
                 .build()
 
+            audioFocusRequest = audioFocusRequestBuilder // Initialize audioFocusRequest
             audioManager.requestAudioFocus(audioFocusRequestBuilder)
         } else {
             // For older Android versions, use the older method to request audio focus
