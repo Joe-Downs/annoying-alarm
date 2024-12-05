@@ -136,7 +136,7 @@ class AlarmActivity: AppCompatActivity() {
         val randomPuzzle = Puzzle.values().random()
         when (randomPuzzle) {
             Puzzle.SlidingPuzzle -> {
-                val intent = Intent(this, RGBGuruPuzzle::class.java).apply {
+                val intent = Intent(this, SlidingPuzzle::class.java).apply {
                     putExtra(IS_SNOOZE_KEY, isSnooze)
                 }
 
@@ -144,7 +144,7 @@ class AlarmActivity: AppCompatActivity() {
             }
 
             Puzzle.AdditionPuzzle -> {
-                val intent = Intent(this, RGBGuruPuzzle::class.java).apply {
+                val intent = Intent(this, AdditionPuzzle::class.java).apply {
                     putExtra(IS_SNOOZE_KEY, isSnooze)
                 }
 
