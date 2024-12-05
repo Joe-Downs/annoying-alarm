@@ -24,7 +24,8 @@ cannot be snoozed or turned off until you complete a minigame.
 Implement more puzzles/games. <br/>
 Implement the ability to select alarm ringtone. <br/>
 Apply dynamic difficulty, increase the difficulty of the puzzle when user choose to snooze. <br/>
-Ability to select prefered puzzle/games. 
+Ability to select prefered puzzle/games.  <br/>
+Improve UI with colorful pitures and background.
 
 ## Authors
 
