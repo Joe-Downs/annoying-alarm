@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.TextView
 import androidx.activity.compose.setContent
 import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +27,7 @@ class RGBGuruPuzzle : AppCompatActivity() {
     lateinit var redSlider: SeekBar
     lateinit var greenSlider: SeekBar
     lateinit var blueSlider: SeekBar
+    lateinit var message: TextView
 
     private fun getRandomColor() : Int {
         val red = (0..255).random()

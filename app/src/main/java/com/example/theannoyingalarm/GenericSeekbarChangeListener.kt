@@ -1,9 +1,16 @@
 package com.example.theannoyingalarm
 
 import android.graphics.Color
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import kotlinx.coroutines.delay
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class GenericSeekBarChangeListener(puzzle : RGBGuruPuzzle) : OnSeekBarChangeListener
 {
@@ -17,13 +24,16 @@ class GenericSeekBarChangeListener(puzzle : RGBGuruPuzzle) : OnSeekBarChangeList
             val color = Color.argb(255, red, green, blue)
             Log.d("COLOR", color.toString())
             val target = this.puzzle.targetColor
+
             // This tolerance can be adjusted to make the game harder / easier
             val tolerance = 50
             if (Color.red(color) <= Color.red(target) + tolerance && Color.red(color) >= Color.red(target) - tolerance) {
                 if (Color.green(color) <= Color.green(target) + tolerance && Color.green(color) >= Color.green(target) - tolerance) {
                     if (Color.blue(color) <= Color.blue(target) + tolerance && Color.blue(color) >= Color.blue(target) - tolerance) {
-                        Log.d("COLOR", "YOU WIN")
-                        this.puzzle.puzzleComplete()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            delay(2000)
+                            puzzle.puzzleComplete()
+                        }
                     }
                 }
 
