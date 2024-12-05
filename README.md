@@ -16,8 +16,9 @@ Alarms are set and go off like any regular alarm, but the catch is that they
 cannot be snoozed or turned off until you complete a minigame.
 
 ### Minigames
-Sliding Puzzle.<br/>
-Addition Puzzle.
+- Sliding Puzzle
+- Addition Puzzle
+- RGB Guru Puzzle
 
 ### Continuation development
 Implement more puzzles/games. <br/>
