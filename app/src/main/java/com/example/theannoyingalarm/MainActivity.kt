@@ -22,56 +22,64 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : ComponentActivity() {
+    // Declare variables for activity result launcher, view model, and UI components
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var alarmViewModel: AlarmViewModel
-
     private lateinit var alarmRecyclerView: RecyclerView
     private lateinit var addAlarmButton: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Set the app to light mode
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        // Set the content view for the activity
         setContentView(R.layout.main_activity)
 
+        // Request exclusion from battery optimizations
         requestBatteryOptimizationExclusion()
 
-        // Initialize all views
+        // Initialize all views using findViewById
         alarmRecyclerView = findViewById(R.id.alarmsRecyclerView)
         addAlarmButton = findViewById(R.id.addAlarmButton)
 
-        // Calculate how many alarms can appear in one column and set the layout
+        // Calculate how many alarms can appear in one column based on screen width
         val spanCount = spanCount(150)
+        // Set the layout manager of the RecyclerView to a grid layout
         alarmRecyclerView.layoutManager = GridLayoutManager(this, spanCount)
 
-        // Set up recycler view adapter
+        // Set up the RecyclerView adapter with onClick and onDelete callbacks
         val adapter = AlarmsAdapter(
             this,
             emptyList(),
-            onItemClick = { alarm -> editAlarmShow(alarm) },
-            onDeleteClick = { alarm -> deleteAlarm(alarm) })
+            onItemClick = { alarm -> editAlarmShow(alarm) }, // Edit alarm when clicked
+            onDeleteClick = { alarm -> deleteAlarm(alarm) } // Delete alarm when delete icon clicked
+        )
         alarmRecyclerView.adapter = adapter
 
-        // Initialize View Model using the Factory
+        // Initialize the ViewModel using a factory to provide the application context
         val factory = AlarmFactory(application)
         alarmViewModel = ViewModelProvider(this, factory)[AlarmViewModel::class.java]
 
-        // Observe Live Data
+        // Observe the LiveData for changes in alarms and update the RecyclerView adapter
         alarmViewModel.alarms.observe(this) { alarms ->
             adapter.setData(alarms)
         }
 
-        // Set up add alarm button
+        // Set up the "add alarm" button to open the alarm editor when clicked
         addAlarmButton.setOnClickListener {
-            val addAlarm = Alarm(name = "Alarm", hour =  6, min =  0, isAm =  false)
-            val intent = Intent(this, AlarmEdit::class.java). apply {
+            // Create a default alarm object
+            val addAlarm = Alarm(name = "Alarm", hour = 6, min = 0, isAm = false)
+            // Create an intent to open the AlarmEdit activity
+            val intent = Intent(this, AlarmEdit::class.java).apply {
                 putExtra(ALARM_KEY, addAlarm)
                 putExtra(ADD_ALARM_KEY, true)
             }
 
+            // Launch the activity for result to handle adding a new alarm
             activityResultLauncher.launch(intent)
         }
 
-        // Initialize the ActivityResultLauncher
+        // Initialize the ActivityResultLauncher to handle result after activity finishes
         activityResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -80,10 +88,13 @@ class MainActivity : ComponentActivity() {
                 val resultAlarm = (result.data?.getSerializableExtra(ALARM_KEY) as? Alarm)
                 if (resultAlarm != null) {
                     if (isAdd) {
+                        // Add new alarm to the database
                         alarmViewModel.addAlarm(resultAlarm)
                     } else {
+                        // Update existing alarm
                         alarmViewModel.updateAlarm(resultAlarm)
                         resultAlarm.cancelAlarm(this)
+                        // Re-set the alarm if it's active
                         if (resultAlarm.isActive) {
                             resultAlarm.setAlarm(this)
                         }
@@ -92,78 +103,81 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Add default item if first launch
+        // Check if it's the first launch and add a default alarm if so
         checkAndAddDefaultItem()
 
-        // Ask permission to use notification alarm
+        // Request permission to post notifications if required
         notifyPermission()
     }
 
-    // Handle Permission Request Result
+    // Handle the result of permission requests (e.g., notification permission)
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted
+                // Permission granted, proceed
                 return
             } else {
-                // Permission denied
-                Log.d("Notification Permission", "Permission were denied to allow notification resources")
+                // Permission denied, log the error
+                Log.d("Notification Permission", "Permission was denied to allow notification resources")
             }
         }
     }
 
+    // Calculate how many items can fit in one column based on item width
     private fun spanCount(itemWidth: Int): Int {
         val displayMetrics = resources.displayMetrics
         val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
         return (screenWidthDp / itemWidth).toInt()
     }
 
+    // Launch the alarm editor to edit an existing alarm
     private fun editAlarmShow(alarm: Alarm) {
         val intent = Intent(this, AlarmEdit::class.java).apply {
             putExtra(ALARM_KEY, alarm)
-//            putExtra(POSITION_KEY, position)
             putExtra(ADD_ALARM_KEY, false)
         }
-
         activityResultLauncher.launch(intent)
     }
 
+    // Delete an alarm and remove it from the database
     private fun deleteAlarm(alarm: Alarm) {
         alarm.cancelAlarm(this)
         alarmViewModel.deleteAlarm(alarm)
     }
 
-    // Check if the app is first launch
+    // Check if it's the first time launching the app and add a default alarm
     private fun checkAndAddDefaultItem() {
         val sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
         val isFirstLaunch = sharedPreferences.getBoolean("isFirstLaunch", true)
 
         if (isFirstLaunch) {
-            // If it is the first time launching the app, add a default data
+            // If it's the first launch, add a default alarm
             alarmViewModel.addAlarm(Alarm(name = "Alarm", hour = 6, min = 0, isAm = true))
 
-            // Update so that the first launch was handle
+            // Update shared preferences to mark that the first launch has been handled
             sharedPreferences.edit().putBoolean("isFirstLaunch", false).apply()
         }
     }
 
+    // Request permission to post notifications for Android 13 and above
     private fun notifyPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val permissionState = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-            // If the permission is not granted, request it.
+            // If permission is not granted, request it
             if (permissionState == PackageManager.PERMISSION_DENIED) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), NOTIFICATION_PERMISSION_REQUEST_CODE)
             } else {
-                // Permission already granted, proceed with other initializations or permissions
+                // Permission already granted, no further action needed
                 return
             }
         } else {
-            // For versions lower than Android 13, proceed without checking POST_NOTIFICATIONS permission
+            // For versions lower than Android 13, no need to check POST_NOTIFICATIONS permission
             return
         }
     }
 
+    // Request exclusion from battery optimizations to ensure alarms are not delayed
     private fun requestBatteryOptimizationExclusion() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {

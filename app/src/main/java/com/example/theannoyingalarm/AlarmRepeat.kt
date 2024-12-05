@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 
 class AlarmRepeat: AppCompatActivity() {
+
+    // Declare buttons for each day of the week
     private lateinit var repeatMonday: Button
     private lateinit var repeatTuesday: Button
     private lateinit var repeatWednesday: Button
@@ -16,17 +18,21 @@ class AlarmRepeat: AppCompatActivity() {
     private lateinit var repeatSaturday: Button
     private lateinit var repeatSunday: Button
 
+    // Declare save and cancel buttons
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
 
+    // Drawable for the checkmark icon (used to mark selected days)
     private var img: Drawable? = null
 
+    // String to hold the selected repeat days (e.g., "MTW" for Monday, Tuesday, Wednesday)
     private var repeatDates = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.set_repeat)
 
+        // Initialize the buttons for each day of the week
         repeatMonday = findViewById(R.id.repeatMonday)
         repeatTuesday = findViewById(R.id.repeatTuesday)
         repeatWednesday = findViewById(R.id.repeatWednesday)
@@ -35,19 +41,24 @@ class AlarmRepeat: AppCompatActivity() {
         repeatSaturday = findViewById(R.id.repeatSaturday)
         repeatSunday = findViewById(R.id.repeatSunday)
 
+        // Initialize the save and cancel buttons
         saveButton = findViewById(R.id.repeatDone)
         cancelButton = findViewById(R.id.repeatCancel)
 
+        // Retrieve the repeat days passed from the previous activity
         repeatDates = intent.getStringExtra(REPEAT_KEY) ?: ""
 
-        val size = dpToPx(24f)
-        val color = ContextCompat.getColor(this, R.color.system_blue)
-        img = ContextCompat.getDrawable(this, R.drawable.icons8_done)
-        img?.setTint(color)
-        img?.setBounds(0,0,size,size)
+        // Set the size and color of the checkmark icon
+        val size = dpToPx(24f) // Convert dp to px for the size of the checkmark
+        val color = ContextCompat.getColor(this, R.color.system_blue) // Set the color for the checkmark
+        img = ContextCompat.getDrawable(this, R.drawable.icons8_done) // Load the checkmark icon
+        img?.setTint(color) // Tint the icon with the chosen color
+        img?.setBounds(0, 0, size, size) // Set the bounds for the icon
 
+        // Set up the buttons based on the current repeat days
         setUpButtons()
 
+        // Set onClickListeners for each day of the week
         repeatMonday.setOnClickListener {
             val button = it as Button
             val day = WeekDay.MONDAY
@@ -118,64 +129,70 @@ class AlarmRepeat: AppCompatActivity() {
             }
         }
 
+        // Set up the save and cancel buttons
         saveButton.setOnClickListener {
-            saveClicked()
+            saveClicked() // Save the selected repeat days and close the activity
         }
 
         cancelButton.setOnClickListener {
-            cancelClicked()
+            cancelClicked() // Close the activity without saving
         }
     }
 
+    // Remove a date (day) from the repeatDates string and update the button's icon
     private fun removeDate(button: Button, date: WeekDay) {
-        button.setCompoundDrawables(null, null, null, null)
-        repeatDates = repeatDates.replace(date.short.toString(), "")
+        button.setCompoundDrawables(null, null, null, null) // Remove the checkmark icon
+        repeatDates = repeatDates.replace(date.short.toString(), "") // Remove the day from the repeatDates string
     }
 
+    // Add a date (day) to the repeatDates string and update the button's icon
     private fun setDate(button: Button, date: WeekDay) {
-        button.setCompoundDrawables(null, null, img, null)
-        repeatDates += date.short
+        button.setCompoundDrawables(null, null, img, null) // Set the checkmark icon
+        repeatDates += date.short // Add the day to the repeatDates string
     }
 
+    // Set the button icons based on the current repeatDates string
     private fun setUpButtons() {
         if (repeatDates.contains(WeekDay.MONDAY.short)) {
-            repeatMonday.setCompoundDrawables(null, null, img, null)
+            repeatMonday.setCompoundDrawables(null, null, img, null) // Show checkmark for Monday
         }
         if (repeatDates.contains(WeekDay.TUESDAY.short)) {
-            repeatTuesday.setCompoundDrawables(null, null, img, null)
+            repeatTuesday.setCompoundDrawables(null, null, img, null) // Show checkmark for Tuesday
         }
         if (repeatDates.contains(WeekDay.WEDNESDAY.short)) {
-            repeatWednesday.setCompoundDrawables(null, null, img, null)
+            repeatWednesday.setCompoundDrawables(null, null, img, null) // Show checkmark for Wednesday
         }
         if (repeatDates.contains(WeekDay.THURSDAY.short)) {
-            repeatThursday.setCompoundDrawables(null, null, img, null)
+            repeatThursday.setCompoundDrawables(null, null, img, null) // Show checkmark for Thursday
         }
         if (repeatDates.contains(WeekDay.FRIDAY.short)) {
-            repeatFriday.setCompoundDrawables(null, null, img, null)
+            repeatFriday.setCompoundDrawables(null, null, img, null) // Show checkmark for Friday
         }
         if (repeatDates.contains(WeekDay.SATURDAY.short)) {
-            repeatSaturday.setCompoundDrawables(null, null, img, null)
+            repeatSaturday.setCompoundDrawables(null, null, img, null) // Show checkmark for Saturday
         }
         if (repeatDates.contains(WeekDay.SUNDAY.short)) {
-            repeatSunday.setCompoundDrawables(null, null, img, null)
+            repeatSunday.setCompoundDrawables(null, null, img, null) // Show checkmark for Sunday
         }
     }
 
+    // Save the selected repeat days and return them to the previous activity
     private fun saveClicked() {
-//        Toast.makeText(applicationContext, repeatDates, Toast.LENGTH_SHORT).show()
-        val resultIntent = Intent()
-        resultIntent.putExtra(REPEAT_KEY, repeatDates)
-        setResult(RESULT_OK, resultIntent)
-        finish()
+        val resultIntent = Intent() // Create an intent to return the result
+        resultIntent.putExtra(REPEAT_KEY, repeatDates) // Add the repeatDates string to the result
+        setResult(RESULT_OK, resultIntent) // Set the result as OK
+        finish() // Close the activity
     }
 
+    // Cancel the selection and close the activity without saving
     private fun cancelClicked() {
-        finish()
+        finish() // Close the activity without saving
     }
 
+    // Convert dp (density-independent pixels) to px (pixels)
     private fun dpToPx(dp: Float): Int {
-        val density = resources.displayMetrics.density
-        return (dp * density).toInt()
+        val density = resources.displayMetrics.density // Get the screen density
+        return (dp * density).toInt() // Convert dp to px
     }
 }
 

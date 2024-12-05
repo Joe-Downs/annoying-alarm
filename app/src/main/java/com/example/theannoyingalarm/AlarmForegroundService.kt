@@ -19,22 +19,29 @@ import androidx.core.app.NotificationCompat
 
 class AlarmForegroundService : Service() {
 
+    // Declare AudioManager and AudioFocusRequest for handling audio focus
     private lateinit var audioManager: AudioManager
     private lateinit var audioFocusRequest: AudioFocusRequest
 
+    // MediaPlayer for playing the alarm sound
     private var mediaPlayer: MediaPlayer? = null
+    // Notification channel ID
     private val channelId = "alarm_channel"
 
+    // Called when the service is started
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Retrieve the Alarm object passed with the intent
         val tempAlarm = (intent?.getSerializableExtra("Alarm_object") as? Alarm)!!
 
+        // Create the notification channel (required for notifications)
         createNotificationChannel()
 
-        // Create an intent to open the AlarmActivity
+        // Create an intent to launch the AlarmActivity when the notification is tapped
         val fullScreenIntent = Intent(this, AlarmActivity::class.java).apply {
             putExtra("Alarm_object", tempAlarm)
         }
 
+        // Create a PendingIntent for opening the AlarmActivity
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,
@@ -42,54 +49,61 @@ class AlarmForegroundService : Service() {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
+        // Build the notification to display while the service is running
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("Alarm Active")
             .setContentText("Tap to stop the alarm.")
             .setSmallIcon(R.drawable.baseline_access_alarms_24)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
-            .setFullScreenIntent(pendingIntent, true)
+            .setFullScreenIntent(pendingIntent, true)  // Full screen intent for alarm activity
             .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
+            .setAutoCancel(true)  // Automatically cancel notification when tapped
             .build()
 
+        // Start the service in the foreground with the created notification
         startForeground(1, notification)
 
-        // Initialize AudioManager
+        // Initialize the AudioManager to manage audio focus
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-        // Add 3 seconds of delay to ensure the sound play after the notification
+        // Add a delay of 3 seconds before playing the alarm sound to ensure proper notification display
         Handler(Looper.getMainLooper()).postDelayed({
+            // Request audio focus to ensure the alarm sound can be played
             val result = requestAudioFocus()
             if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                startAlarm()
+                startAlarm()  // Start playing the alarm sound
             }
         }, 3000) // Delay of 3 seconds
 
-        return START_STICKY
+        return START_STICKY // Keep the service running
     }
 
+    // Called when the service is destroyed, stops the alarm
     override fun onDestroy() {
         stopAlarm()
         super.onDestroy()
     }
 
+    // onBind is not used since this is a started service, so we return null
     override fun onBind(intent: Intent?): IBinder? = null
 
+    // Method to request audio focus for playing the alarm sound
     private fun requestAudioFocus(): Int {
-        // For Android 8.0 (API level 26) and higher, use AudioFocusRequest
+        // For Android 8.0 and higher, use AudioFocusRequest
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val audioFocusRequestBuilder = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                .setOnAudioFocusChangeListener(audioFocusChangeListener)
+                .setOnAudioFocusChangeListener(audioFocusChangeListener)  // Set listener for audio focus changes
                 .build()
 
             audioManager.requestAudioFocus(audioFocusRequestBuilder)
         } else {
-            // For older Android versions, use requestAudioFocus() method
+            // For older Android versions, use the older method to request audio focus
             audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_ALARM, AudioManager.AUDIOFOCUS_GAIN)
         }
     }
 
+    // Listener to handle changes in audio focus
     private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
         when (focusChange) {
             AudioManager.AUDIOFOCUS_GAIN -> {
@@ -99,23 +113,25 @@ class AlarmForegroundService : Service() {
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
-                // Temporarily lost audio focus (e.g., media playback started)
+                // Temporarily lost audio focus (e.g., media playback started), pause alarm sound
                 if (mediaPlayer?.isPlaying == true) {
                     mediaPlayer?.pause()
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS -> {
-                // Permanently lost audio focus (e.g., an app took over)
+                // Permanently lost audio focus (e.g., another app took over), stop alarm
                 stopAlarm()
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-                // Audio focus lost, but the alarm sound can be quieter (ducking)
+                // Audio focus lost, but allow alarm sound to be quieter (ducking)
                 if (mediaPlayer?.isPlaying == true) {
                     mediaPlayer?.setVolume(0.1f, 0.1f)  // Reduce volume to allow ducking
                 }
             }
         }
     }
+
+    // Method to start the alarm sound
     private fun startAlarm() {
         mediaPlayer = MediaPlayer.create(this, R.raw.bright_morning_alarm).apply {
             setAudioAttributes(
@@ -124,29 +140,32 @@ class AlarmForegroundService : Service() {
                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                     .build()
             )
-            isLooping = true
+            isLooping = true  // Loop the alarm sound until stopped
             start()
         }
     }
 
+    // Method to stop the alarm sound
     private fun stopAlarm() {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
-        abandonAudioFocus()  // Abandon audio focus when the alarm stops
+        mediaPlayer?.stop()  // Stop the media player
+        mediaPlayer?.release()  // Release resources
+        mediaPlayer = null  // Nullify media player reference
+        abandonAudioFocus()  // Abandon audio focus when done
     }
 
+    // Method to abandon audio focus after the alarm is stopped
     private fun abandonAudioFocus() {
-        // Abandon audio focus when done with alarm
+        // For Android 8.0 and higher, use AudioFocusRequest to abandon focus
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             audioFocusRequest?.let { audioManager.abandonAudioFocusRequest(it) }
         } else {
-            audioManager.abandonAudioFocus(audioFocusChangeListener)
+            audioManager.abandonAudioFocus(audioFocusChangeListener)  // For older versions
         }
     }
 
+    // Method to create the notification channel for API 26+ devices
     private fun createNotificationChannel() {
-        // Create a notification channel for API 26+
+        // Create the notification channel only if the API level is 26 or higher
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
@@ -154,11 +173,11 @@ class AlarmForegroundService : Service() {
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "Channel for Alarm notifications"
-                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-                setBypassDnd(true)
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC  // Make notification visible on lockscreen
+                setBypassDnd(true)  // Allow notification to bypass Do Not Disturb mode
             }
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+            notificationManager.createNotificationChannel(channel)  // Create the channel
         }
     }
 }

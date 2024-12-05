@@ -113,7 +113,7 @@ class AlarmActivity: AppCompatActivity() {
         stopService(serviceIntent)
 
         // Close the activity
-        finish()
+        finishAffinity()
     }
 
     private fun startUpdateTime() {
