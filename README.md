@@ -53,5 +53,5 @@ Made by CSE 550-(75/76) Group 4:
 * Joseph Downs
 * Danson Wachira
 
-### Appendix
+## Appendix
 * Presentation Video: https://youtu.be/uEw_TFJWeFo
